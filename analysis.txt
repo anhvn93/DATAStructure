@@ -1,0 +1,9 @@
+Additional Requirements:
+					Discussion
+
+As for Big-O, we all know that MergeSort is the one that takes the smallest amount of time to sort in the worst case (nlogn), while QuickSort & SelectionSort both take big-O of n^2.
+
+From this project, we can see that when the amount of data coming in is not too big (in the case of wordlist 10), MergeSort still leads in the race as the fastest sort (2291ns in avergae), SelectionSort comes in 2nd (2891ns in averge) and Quicksort takes 12343ns to sort. The difference is not significant from Mergesort and Selection Sort.
+
+When the amount of data coming in (wordlist) gets bigger (100, 1000, 10000...), we can see that MergeSort is faster. In worse-case scenario, Mergesort takes nlogn. However, quicksort is in place whereas Mergesort is not. Mergesort requires a temporary array and takes additional place.
+
