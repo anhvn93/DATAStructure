@@ -10,7 +10,7 @@ import java.util.Stack;
  * Efficiencies may vary by implementation, but all methods should have at least
  * the worst case runtimes of a standard Tree.
  * 
- * @author Anh Nguyen
+ * @author anhvn93
  */
 public class BinarySearchTree<E extends Comparable<? super E>> extends AbstractCollection<E> {
 
