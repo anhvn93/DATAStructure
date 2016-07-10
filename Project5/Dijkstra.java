@@ -1,5 +1,4 @@
 package edu.iastate.cs228.hw5;
-
 /**
  * @author ANH NGUYEN
  */
