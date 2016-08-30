@@ -1,0 +1,85 @@
+import java.util.Scanner;
+
+public class LargestSum_programming3 {
+   static class Cell {
+      private int Pr;
+      private int Pc;
+      private int value;
+
+      public Cell() {
+         Pr = 0;
+         Pc = 0;
+         value = 0;
+      }
+
+      public Cell(int r, int c, int value) {
+         this.Pr = r;
+         this.Pc = c;
+         this.value = value;
+      }
+
+      public void setValue(int val) {
+         value = val;
+      }
+
+      public void setPr(int r) {
+         Pr = r;
+      }
+
+      public void setPc(int c) {
+         Pc = c;
+      }
+
+   }
+
+   public static void main(String[] args) {
+      Scanner scanner = new Scanner(System.in);
+      while (scanner.hasNextInt()) {
+         int rows = scanner.nextInt();
+         Cell[][] triangleSum = new Cell[rows][rows];
+         int[][] triangleData = new int[rows][rows];
+         for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < row + 1; col++) {
+               triangleData[row][col] = scanner.nextInt();
+               triangleSum[row][col] = new Cell(row, col, triangleData[row][col]);
+            }
+         }
+
+         for (int row = triangleSum.length - 2; row >= 0; row--) { // row = 4
+                                                                   // ->0
+            for (int col = 0; col < row + 1; col++) { // col = 0 ->4
+               if ((triangleSum[row + 1][col]).value >= (triangleSum[row + 1][col + 1]).value) {
+                  triangleSum[row][col].setPc(col);
+                  triangleSum[row][col].setPr(row + 1);
+                  triangleSum[row][col].setValue((triangleSum[row][col]).value + (triangleSum[row + 1][col]).value);
+
+               } else {
+                  triangleSum[row][col].setPc(col + 1);
+                  triangleSum[row][col].setPr(row + 1);
+                  triangleSum[row][col].setValue((triangleSum[row][col]).value + (triangleSum[row + 1][col + 1]).value);
+
+               }
+
+            }
+         }
+
+         System.out.println("Max is " + triangleSum[0][0].value);
+         int[] arr = new int[rows];
+         arr[0] = triangleData[0][0];
+         if (rows > 1) {
+            int previousCol = 0;
+            for (int i = 1; i < rows; i++) {
+               previousCol = (triangleSum[i - 1][previousCol]).Pc;
+
+               arr[i] = triangleData[i][previousCol];
+            }
+         }
+         for (int i = 0; i < arr.length - 1; i++)
+
+            System.out.print(arr[i] + "-->");
+         System.out.println(arr[arr.length - 1]);
+
+      }
+      scanner.close();
+   }
+}
