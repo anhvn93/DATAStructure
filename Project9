@@ -1,0 +1,201 @@
+#include <numeric>
+#include <utility>
+#include <cstdio>
+#include <vector>
+#include <stack>
+#include <list>
+#include <map>
+#include <set>
+#include <sstream>
+#include <iostream>
+#include <cmath>
+#include <cstdlib>
+#include <queue>
+#include <iomanip>
+#include <deque>
+#include <string.h>
+#define LL long long
+#include <bitset>
+#include <algorithm>
+#include <functional>
+#include <ctime>
+using namespace std;
+#define eps 1e-7
+const int intf=1e8;
+const int maximum=200+5;
+struct Edge
+{
+    int cap,flow,u,v;
+    Edge(int u,int v,int cap,int flow)
+    :u(u),v(v),cap(cap),flow(flow) { }
+};
+vector<int> G[maximum];
+vector<Edge> line;
+
+void add(int u,int v,int cap)
+{
+    line.push_back(Edge(u,v,cap,0));
+    line.push_back(Edge(v,u,0,0));
+    int m=line.size();
+    G[u].push_back(m-2);
+    G[v].push_back(m-1);
+}
+struct ISAP
+{
+    int d[maximum], p[maximum], num[maximum], cur[maximum];
+    int n, s, t;
+    void init(int n) { this->n = n; }
+    int Augmenting()
+    {
+        int x = t, a = intf;
+        while (x != s)
+        {
+            Edge&e = line[p[x]];
+            a = min(a, e.cap - e.flow);
+            x = e.u;
+        }
+        x = t;
+        while (x != s)
+        {
+            line[p[x]].flow += a;
+            line[p[x] ^ 1].flow -= a;
+            x = line[p[x]].u;
+        }
+        return a;
+    }
+    void bfs()
+    {
+        for (int i = 0; i<n; ++i) d[i] = intf;
+        queue<int> q;
+        d[t] = 0;
+        q.push(t);
+        while (q.size())
+        {
+            int x = q.front(); q.pop();
+            for (int i = 0; i<G[x].size(); ++i)
+            {
+                Edge&e = line[G[x][i]];
+                if (e.cap>0 || d[e.v] <= d[x] + 1) continue;
+                d[e.v] = d[x] + 1;
+                q.push(e.v);
+            }
+        }
+    }
+    int maxflow(int s, int t)
+    {
+        this->s = s, this->t = t;
+        memset(num, 0, sizeof(num));
+        memset(cur, 0, sizeof(cur));
+        bfs();
+        for (int i = 0; i<n; ++i)
+        if (d[i] != intf) ++num[d[i]];
+        int flow = 0, x = s;
+        while (d[s]<n)
+        {
+            if (x == t)
+            {
+                flow += Augmenting();
+                x = s;
+            }
+            int good = 0;
+            for (int i = cur[x]; i<G[x].size(); ++i)
+            {
+                Edge&e = line[G[x][i]];
+                if (e.cap>e.flow&&d[e.v] + 1 == d[x])
+                {
+                    good = 1;
+                    cur[x] = i;
+                    p[e.v] = G[x][i];
+                    x = e.v;
+                    break;
+                }
+            }
+            if (!good)
+            {
+                int m = n - 1;
+                for (int i = 0; i<G[x].size(); ++i)
+                {
+                    Edge&e = line[G[x][i]];
+                    if (e.cap>e.flow) m = min(m, d[e.v]);
+                }
+                if (--num[d[x]] == 0) break;
+                ++num[d[x] = m + 1];
+                cur[x] = 0;
+                if (x != s) x = line[p[x]].u;
+            }
+        }
+        return flow;
+    }
+}solve;
+int s,n,t;
+bool enm[maximum];
+int a[maximum];
+vector<int> bin;
+int cnt,ctr;
+
+inline int in(int x) { return (x<<1)-1; }
+inline int out(int x) { return x<<1; }
+
+void input()
+{
+    scanf("%d",&n);
+    memset(enm,0,sizeof(enm));
+    line.clear();
+    s=0; t=2*n+1; solve.init(t+1);
+    for(int i=0;i<maximum;++i) G[i].clear();
+    ctr=0;
+    for(int i=1;i<=n;++i) {
+        int x; scanf("%d",&x);
+        a[i]=x;
+        if(x==0) enm[i]=true;
+        else { add(s,in(i),x); add(in(i),out(i),x); add(out(i),t,1); ctr++; }
+    }
+    char s[110];
+    bin.clear(); cnt=0;
+    for(int i=1;i<=n;++i) {
+        scanf("%s",s+1);
+        if(enm[i]) continue;
+        bool near=false;
+        for(int j=1;j<=n;++j) {
+            if(s[j]=='N') continue;
+            if(enm[j]) near=true;
+            else add(in(i),out(j),a[i]);
+        }
+        if(near) { add(out(i),t,intf); int k=line.size()-2; bin.push_back(k); ++cnt; }
+    }
+}
+void clear(int up)
+{
+    for(int i=0;i<line.size();++i) line[i].flow=0;
+    for(int i=0;i<bin.size();++i) {
+        line[bin[i]].cap=up;
+    }
+}
+
+bool good(int up)
+{
+    clear(up);
+    int flow=solve.maxflow(s,t);
+    return (up*cnt+ctr)==flow;
+}
+void solving()
+{
+    int l=1,r=n*100,m;
+    int ans=0;
+    while(l<=r) {
+        m=(l+r)>>1;
+        if(good(m)) {
+            ans=m;
+            l=m+1;
+        } else r=m-1;
+    }
+    ++ans; printf("%d\n",ans);
+}
+int main()
+{
+    int T;cin>>T;
+    while(T--) {
+        input();
+        solving();
+    }
+}
