@@ -1,0 +1,62 @@
+
+   import java.util.Scanner;
+   import java.io.BufferedInputStream;
+  public class Rumors_ProgrammingAssignment2 {
+ 
+   final static int disjoint = 1000;
+   public static void main(String[] args) {
+   Scanner scan = new Scanner(new BufferedInputStream(System.in));
+   while (scan.hasNext()) {
+      int index = 0;
+      int scanInt = scan.nextInt();
+         if (scanInt == 0) {
+            break;
+            }
+         int[][] numberOfTimes = new int[scanInt + 1][scanInt + 1];
+            for (int i = 0; i < scanInt + 1; i++) {
+               for (int j = 0; j < scanInt + 1; j++) {
+                  numberOfTimes[i][j] = disjoint;
+               }
+            }
+         for (int i = 1; i <= scanInt; i++) {
+               int sb = i;
+               int number = scan.nextInt();
+               for (int j = 1; j <= number; j++) {
+                  int contacts = scan.nextInt();
+                  int time = scan.nextInt();
+                  numberOfTimes[sb][contacts] = time;
+               }
+            }
+            for (int k = 1; k <= scanInt; k++) {
+               for (int i = 1; i <= scanInt; i++) {
+                  for (int j = 1; j <= scanInt; j++) {
+                     if (i != j && numberOfTimes[i][k] + numberOfTimes[k][j] < numberOfTimes[i][j]) {
+                        numberOfTimes[i][j] = numberOfTimes[i][k] + numberOfTimes[k][j];
+                     }
+                  }
+               }
+            }
+   for (int i = 1; i <= scanInt; i++) {
+               numberOfTimes[i][0] = 0;
+               for (int j = 1; j <= scanInt; j++) {
+                  if (numberOfTimes[i][j] > numberOfTimes[i][0] && i != j) {
+                     numberOfTimes[i][0] = numberOfTimes[i][j];
+                  }
+               }
+            }
+   for (int i = 1; i <= scanInt; i++) {
+               if (numberOfTimes[i][0] < numberOfTimes[0][0] && numberOfTimes[i][0] != disjoint) {
+                  numberOfTimes[0][0] = numberOfTimes[i][0];
+                  index = i;
+               }
+            }
+   if (index == 0) {
+               System.out.println("disjoint");
+            } else {
+               System.out.println(index + " " + numberOfTimes[0][0]);
+            }
+         
+   }
+   scan.close();
+      }
+   }
