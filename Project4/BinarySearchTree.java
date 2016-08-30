@@ -1,5 +1,4 @@
 package edu.iastate.cs228.hw4;
-
 import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.Iterator;
